@@ -1,37 +1,38 @@
-# Bafômetro com Sensor de Álcool
+# Projeto Bafômetro com Sensor MQ-3 e LED Bar Graph
 
-Este projeto é um bafômetro que utiliza um sensor de gás para detectar a concentração de álcool no ambiente. O sistema exibe o valor como uma porcentagem em um display LCD e indica o nível de álcool por LEDs de status e um alarme sonoro.
+Este é um projeto de bafômetro utilizando o sensor MQ-3 para detectar a presença de álcool no ar. Conforme a concentração de álcool aumenta, os LEDs no bar graph acendem, indicando o nível de álcool detectado. Quando o nível de álcool atinge um limite alto, um buzzer é acionado.
 
-## Componentes
+## Componentes Utilizados
 
 - Arduino Uno
-- Sensor de Gás MQ-3 (conectado ao pino analógico A0)
-- Display LCD 16x2 com interface I2C
-- LEDs:
-  - Verde (baixo nível de álcool)
-  - Amarelo (nível moderado de álcool)
-  - Vermelho (alto nível de álcool)
-- Buzzer piezoelétrico
-- Resistores para LEDs
-- Fios de conexão
+- Sensor MQ-3 (sensor de álcool)
+- LED Bar Graph (10 LEDs)
+- Buzzer
+- Resistores
+- Jumpers
+- Protoboard
+
+## Configuração do Hardware
+
+1. **Sensor MQ-3**: Conectado ao pino digital `2` e ao pino analógico `A1` no Arduino.
+2. **LED Bar Graph**: Conectado aos pinos `3` a `12` no Arduino.
+3. **Buzzer**: Conectado ao pino `13` no Arduino.
+
+O sensor MQ-3 detecta a concentração de álcool no ar e envia o valor para o Arduino. Esse valor é utilizado para acender um número correspondente de LEDs no bar graph. Quando a concentração de álcool atinge um limite, o buzzer é acionado.
 
 ## Funcionamento
 
-1. **Leitura do Sensor**: O Arduino lê o valor do sensor de gás analógico e mapeia a leitura para uma porcentagem, representando a concentração de álcool.
-2. **Exibição no LCD**: A porcentagem é mostrada no display LCD 16x2, permitindo monitoramento em tempo real.
-3. **Indicação por LEDs e Alarme**:
-   - **Verde**: Indica baixo nível de álcool (< 30%).
-   - **Amarelo**: Indica nível moderado de álcool (entre 30% e 70%).
-   - **Vermelho e Buzzer**: Indica alto nível de álcool (> 70%), com alerta sonoro.
+1. **Leitura do Sensor**: O valor do sensor MQ-3 é lido pelo pino analógico `A1`.
+2. **Controle do LED Bar Graph**: Com base na concentração de álcool detectada, um número correspondente de LEDs é aceso, de 0 a 10.
+3. **Acionamento do Buzzer**: O buzzer é ativado quando 8 ou mais LEDs estão acesos, indicando uma alta concentração de álcool.
 
-## Simulação
+## Ajuste da Sensibilidade
 
-Você pode visualizar e simular o projeto no Tinkercad pelo link abaixo:
+A sensibilidade do bafômetro pode ser ajustada modificando o mapeamento na faixa de leitura do sensor. Isso permite definir a partir de qual concentração de álcool o bafômetro deve acionar o buzzer.
 
-[simulação do Protótipo do Projeto no Tinkercad](https://www.tinkercad.com/things/7BiPETMGZJn-projeto-iot-prototipo-bafometro?sharecode=1JsZHx-zp9WJYykQb8O9KhATIxMsk8mP_KaZvcT5tWA)
+## Como Executar
 
-## Como Usar
-
-1. Conecte os componentes conforme o diagrama de montagem (veja a simulação no Tinkercad para referência).
-2. Faça upload do código para o Arduino.
-3. Ligue o sistema e observe o nível de álcool sendo exibido no LCD, indicado pelos LEDs, e alertado pelo buzzer em caso de alta concentração.
+1. Conecte os componentes conforme descrito na seção de hardware.
+2. Carregue o código no Arduino usando a Arduino IDE.
+3. Aproxime uma fonte de álcool (como uma bebida) do sensor para testar o funcionamento.
+4. Observe o comportamento dos LEDs e do buzzer à medida que a concentração de álcool detectada aumenta.

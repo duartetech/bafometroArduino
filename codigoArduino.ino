@@ -1,62 +1,45 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+//Projeto Bafômetro
 
-#define I2C_ADDR 0x20 // Endereço I2C do LCD
-#define GAS_SENSOR_PIN A0 // Pino onde o sensor de gás está conectado
-
-// Definições dos pinos dos LEDs
-#define LED_VERDE 3  // Pino do LED Verde
-#define LED_AMARELO 2 // Pino do LED Amarelo
-#define LED_VERMELHO 1 // Pino do LED Vermelho
-int piezoPin = 4;
-
-
-LiquidCrystal_I2C lcd(I2C_ADDR, 16, 2); // Cria um objeto LCD de 16 colunas e 2 linhas
+#define sensorDigital 2      // Pino digital do sensor MQ-3
+#define sensorAnalog A1      // Pino analógico do sensor MQ-3
+#define ledStart 3           // Pino inicial do LED Bar Graph
+#define ledEnd 12            // Pino final do LED Bar Graph
+#define buzzer 13           // Pino do Buzzer
 
 void setup() {
-  lcd.init(); // Inicializa o LCD
-  lcd.backlight(); // Ativa a luz de fundo do LCD
+  pinMode(sensorDigital, INPUT); // Configura o pino digital como entrada
+  pinMode(buzzer, OUTPUT);       // Configura o pino do buzzer como saída
   
-  // Configura os pinos dos LEDs como saída
-  pinMode(LED_VERDE, OUTPUT);
-  pinMode(LED_AMARELO, OUTPUT);
-  pinMode(LED_VERMELHO, OUTPUT);
-  pinMode(piezoPin, OUTPUT);
+  // Configura os pinos do LED Bar Graph como saída
+  for (int i = ledStart; i <= ledEnd; i++) {
+    pinMode(i, OUTPUT);
+  }
   
-  lcd.setCursor(0, 0);
-  lcd.print("Nivel de Alcool:");
-  delay(1000); // Atraso para visualização
+  Serial.begin(9600);  // Inicia a comunicação serial
 }
 
 void loop() {
-  int gasValue = analogRead(GAS_SENSOR_PIN); // Lê o valor do sensor de gás
-  float percentage = map(gasValue, 400, 900, 0, 100); // Mapeia o valor para porcentagem
-  
-  // Exibe a porcentagem no LCD
-  lcd.setCursor(0, 1); // Move o cursor para a segunda linha
-  lcd.print(percentage); // Imprime a porcentagem
-  lcd.print("%"); // Imprime o símbolo de porcentagem e limpa o resto da linha
+  bool digital = digitalRead(sensorDigital); // Lê o valor digital do sensor
+  int analog = analogRead(sensorAnalog);     // Lê o valor analógico do sensor
 
-  // Controle dos LEDs com base na qualidade do ar
-  if (percentage < 30) {
-    digitalWrite(LED_VERMELHO, LOW); // Desliga o LED Vermelho
-    digitalWrite(LED_AMARELO, LOW); // Desliga o LED Amarelo
-    digitalWrite(LED_VERDE, HIGH); // Acende o LED Verde
-    noTone(piezoPin);
-    
-  } else if (percentage >= 30 && percentage <= 70) {
-    digitalWrite(LED_VERMELHO, LOW); // Desliga o LED Vermelho
-    digitalWrite(LED_AMARELO, HIGH); // Acende o LED Amarelo
-    digitalWrite(LED_VERDE, LOW); // Desliga o LED Verde
-    noTone(piezoPin);
+  // Mapeamento do valor analógico (0-1023) para o número de LEDs acesos (0-10)
+  int ledsOn = map(analog, 0, 500, 0, 10); // Mapeia o valor para o intervalo 0-10
 
-  } else {
-    digitalWrite(LED_VERMELHO, HIGH); // Acende o LED Vermelho
-    digitalWrite(LED_AMARELO, LOW); // Desliga o LED Amarelo
-    digitalWrite(LED_VERDE, LOW); // Desliga o LED Verde
-    tone(piezoPin, 1000);
-    
+  // Controle do LED Bar Graph
+  for (int i = ledStart; i <= ledEnd; i++) {
+    if (i - ledStart < ledsOn) {
+      digitalWrite(i, HIGH);  // Acende o LED
+    } else {
+      digitalWrite(i, LOW);   // Apaga o LED
+    }
   }
 
-  delay(2000); // Atraso para a próxima leitura
+  // Lógica para acionar o buzzer apenas quando os últimos 3 LEDs (10, 11, 12) acenderem
+  if (ledsOn >= 8) {  // Se o número de LEDs acesos for maior ou igual a 8
+    digitalWrite(buzzer, HIGH); // Liga o buzzer
+  } else {
+    digitalWrite(buzzer, LOW);  // Desliga o buzzer
+  }
+
+  delay(200);  // Aguarda 200ms para a próxima leitura
 }
