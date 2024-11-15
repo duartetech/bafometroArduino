@@ -1,10 +1,10 @@
-//Projeto Bafômetro
+//Projeto Bafometro
 
-#define sensorDigital 2      // Pino digital do sensor MQ-3
-#define sensorAnalog A1      // Pino analógico do sensor MQ-3
-#define ledStart 3           // Pino inicial do LED Bar Graph
-#define ledEnd 12            // Pino final do LED Bar Graph
-#define buzzer 13           // Pino do Buzzer
+#define sensorDigital 3      // Pino digital do sensor MQ-3
+#define sensorAnalog A0      // Pino analógico do sensor MQ-3
+#define ledStart 4           // Pino inicial do LED Bar Graph
+#define ledEnd 13            // Pino final do LED Bar Graph
+#define buzzer 2           // Pino do Buzzer
 
 void setup() {
   pinMode(sensorDigital, INPUT); // Configura o pino digital como entrada
@@ -23,7 +23,7 @@ void loop() {
   int analog = analogRead(sensorAnalog);     // Lê o valor analógico do sensor
 
   // Mapeamento do valor analógico (0-1023) para o número de LEDs acesos (0-10)
-  int ledsOn = map(analog, 0, 500, 0, 10); // Mapeia o valor para o intervalo 0-10
+  int ledsOn = map(analog, 0, 400, 0, 10); // Mapeia o valor para o intervalo 0-10
 
   // Controle do LED Bar Graph
   for (int i = ledStart; i <= ledEnd; i++) {
@@ -35,7 +35,7 @@ void loop() {
   }
 
   // Lógica para acionar o buzzer apenas quando os últimos 3 LEDs (10, 11, 12) acenderem
-  if (ledsOn >= 8) {  // Se o número de LEDs acesos for maior ou igual a 8
+  if (ledsOn >= 9) {  // Se o número de LEDs acesos for maior ou igual a 8
     digitalWrite(buzzer, HIGH); // Liga o buzzer
   } else {
     digitalWrite(buzzer, LOW);  // Desliga o buzzer
